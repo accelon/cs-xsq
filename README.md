@@ -7,3 +7,6 @@
 
 存成純文字 xsq-raw.txt  (UTF-8 Without BOM LF )，node  gen 得切好的經。
 
+
+
+[功德芳名錄](hof.md)

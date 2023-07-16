@@ -20,10 +20,11 @@ const volumnstarts={
 const out=[];
 const tidy=text=>{
     return text.replace(/ *([“”]) */g,'$1').replace(/ *([‘’]) */g,'$1')
+    .replace(/ +([、，])/g,'$1')
     .replace(/☉\n/g,'')//join next line
 }
 const tidybody=lines=>{
-    return tidy(lines.join('\n').replace(/ *([^a-z\d]\d+) */g,(m,m1)=>'^f'+m1.trim()))
+    return tidy(lines.join('\n').replace(/ *([^a-z\-\d])(\d+) */g,(m,m1,m2)=>m1.trim()+'^f'+m2.trim()))
 }
 const tidyfootnote=lines=>{
     return tidy(lines.join('\n')
@@ -34,7 +35,7 @@ const writeVolumn=(v)=>{
     emitNote();
     out.push(paragraph);
     paragraph='';
-    if (v=='an4') {
+    if (v=='dn1') {
         while(out.length && !out[0].trim()) out.shift();
         out[0]='^bk#'+v+out[0];
         writeChanged('off/'+v+'.off',tidybody(out),true);
@@ -86,10 +87,8 @@ const handler=(line)=>{
                 ck=vol[0]+anguttara+vagga+n
             } else {
                 ck=vol[0]+n;
-            }
-            
-            
-            line=trimmed.replace(m[1],'\n^ck#'+ck+'【'+m[1].replace(/ +/g,''))+'】';
+            }            
+            line=trimmed.replace(m[1],'\n^ck#'+ck+'【'+m[1]).replace(/ /g,'')+'】';
         }
     } 
     const m2=line.match(/\d+\./);
@@ -99,7 +98,7 @@ const handler=(line)=>{
             line=''
         } else {
             if (m2) {
-                line=line.replace(/(\d+)\./,'^m$1');
+                line=line.replace(/(\d+) *－ *(\d+)\./,'^m$1-$2').replace(/(\d+)\./,'^m$1');
             } else if (~line.indexOf(n+' ')){//footnote marker
                 notesection=true;
                 emitNote();
